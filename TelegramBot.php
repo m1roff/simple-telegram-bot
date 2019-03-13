@@ -51,6 +51,10 @@ class TelegramBot
     private static $_tg;
     
     private $async = false;
+    
+    private $debug = false;
+    
+    private $logsDirPath = null;
 
     public function __construct($botToken, $defaultChatId = null)
     {
@@ -73,9 +77,36 @@ class TelegramBot
         return self::$_tg;
     }
     
+    /**
+     * Set async mode
+     * @param bool $status
+     * @return $this
+     */
     public function async($status = true)
     {
         $this->async = $status;
+        return $this;
+    }
+    
+    /**
+     * Set debug mode
+     * @param bool $status
+     * @return $this
+     */
+    public function debug($status = true)
+    {
+        $this->debug = $status;
+        return $this;
+    }
+    
+    /**
+     * Set Logs Directory full Path
+     * @param string $path
+     * @return $this
+     */
+    public function setLogDirPath($path)
+    {
+        $this->logsDirPath = $path;
         return $this;
     }
 
@@ -673,13 +704,28 @@ class TelegramBot
         }
         $r = curl_exec($ch);
         if($r == false){
-            $text = 'eroror '.curl_error($ch);
-            $myfile = fopen("error_telegram.log", "w") or die("Unable to open file!");
-            fwrite($myfile, $text);
-            fclose($myfile);
+            $text = '[CURL eroror]: ' . curl_error($ch);
+        } else {
+            $text = '[TRACE]:' . $r;
         }
+        $this->log($text);
+        
         curl_close($ch);
         return json_decode($r);
+    }
+    
+    /**
+     * Write a log
+     * @param mixed $text
+     */
+    private function log($text)
+    {
+        if (false === $this->debug || !is_dir($this->logsDirPath)) {
+            return;
+        }
+        $myfile = fopen($this->logsDirPath . "/telegram.log", "a") or die("Unable to open file!");
+        fwrite($myfile, $text);
+        fclose($myfile);
     }
 
     private function curlFile($path){
