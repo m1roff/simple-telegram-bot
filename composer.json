@@ -1,0 +1,21 @@
+{
+  "name": "mirkhamidov/simple-bot-telegram",
+  "description": "bot for telegram",
+  "type": "library",
+  "keywords": ["extension", "bot", "telegram", "library"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jasur Mirkhamidov",
+      "email": "mirkhamidov.jasur@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "mirkhamidov\\telegramBot\\": ""
+    }
+  }
+}
