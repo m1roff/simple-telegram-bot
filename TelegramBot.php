@@ -49,6 +49,8 @@ class TelegramBot
 
     /** @var TelegramBot */
     private static $_tg;
+    
+    private $async = false;
 
     public function __construct($botToken, $defaultChatId = null)
     {
@@ -69,6 +71,12 @@ class TelegramBot
             self::$_tg = new self($botToken, $defaultChatId);
         }
         return self::$_tg;
+    }
+    
+    public function async($status = true)
+    {
+        $this->async = $status;
+        return $this;
     }
 
     public function getMe()
@@ -644,6 +652,14 @@ class TelegramBot
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_USERAGENT, $this->curlUserAgent);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_VERBOSE, false);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        
+        if ($this->async) {
+            curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+        }
+        
         if (count($option) > 0) {
             curl_setopt($ch, CURLOPT_POST, true);
 
